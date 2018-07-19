@@ -21,6 +21,17 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('client disconnected');
     });
+
+    socket.emit('newMessage', {
+        from: 'vishal',
+        text: 'Hi',
+        createdAt: 1234
+    });
+
+    socket.on('createMessage', (newMessage) => {
+        newMessage.createdAt = 12345;
+        console.log('message created', newMessage);
+    });
 });
 
 //we are now using http server as opposed to express server
