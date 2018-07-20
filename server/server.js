@@ -22,15 +22,13 @@ io.on('connection', (socket) => {
         console.log('client disconnected');
     });
 
-    socket.emit('newMessage', {
-        from: 'vishal',
-        text: 'Hi',
-        createdAt: 1234
-    });
-
-    socket.on('createMessage', (newMessage) => {
-        newMessage.createdAt = 12345;
-        console.log('message created', newMessage);
+    //NOTE: socket emits to single socket connection, io emits to every single connected user
+    socket.on('createMessage', (message) => {
+        io.emit('newMessage', {
+            from: message.from,
+            text: message.text,
+            createdAt: new Date().getTime()
+        });
     });
 });
 
