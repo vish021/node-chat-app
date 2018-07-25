@@ -25,15 +25,13 @@ io.on('connection', (socket) => {
     //NOTE: socket emits to single socket connection, io emits to every single connected user
     socket.on('createMessage', (message, callback) => {
         //io.emit emits to every single user connected
-        io.emit('newMessage',generateMessage( message.from, message.text));
+        io.emit('newMessage', generateMessage(message.from, message.text));
         callback('This is from the server');
-        //emit to everybody but this socket
-        // socket.broadcast.emit('newMessage', {
-        //     from: message.from,
-        //     text: message.text,
-        //     createdAt: new Date().getTime()
-        // });
     });
+
+    socket.on('createLocationMessage', (coords) => {
+        io.emit('newMessage', generateMessage('Admin', `${coords.latitude}, ${coords.longitude}`));
+    })
     
     socket.on('disconnect', () => {
         console.log('client disconnected');
