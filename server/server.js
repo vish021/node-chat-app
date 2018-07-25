@@ -23,10 +23,10 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('newMessage', generateMessage('Admin','New user joined'));
 
     //NOTE: socket emits to single socket connection, io emits to every single connected user
-    socket.on('createMessage', (message) => {
+    socket.on('createMessage', (message, callback) => {
         //io.emit emits to every single user connected
         io.emit('newMessage',generateMessage( message.from, message.text));
-
+        callback('This is from the server');
         //emit to everybody but this socket
         // socket.broadcast.emit('newMessage', {
         //     from: message.from,
