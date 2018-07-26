@@ -4,6 +4,24 @@
  * **/
 var socket = io();//initiating request to keep conn open
 
+//if you're close to bottom of the page, new message comes in scroll to the bottom. Don't scroll to the bottom when you're at the top
+function scrollToBottom() {
+    //selectors
+    var messages = jQuery('#messages');
+    var newMessage = messages.children('li:last-child');//last message just added
+
+    //heights
+    var clientHeight = messages.prop('clientHeight');
+    var scrollTop = messages.prop('scrollTop');
+    var scrollHeight = messages.prop('scrollHeight');
+    var newMessageHeight = newMessage.innerHeight();
+    var lastMessageHEight = newMessage.prev().innerHeight();
+
+    if(scrollTop + clientHeight + newMessageHeight + lastMessageHEight >= scrollHeight) {
+       messages.scrollTop(scrollHeight);
+    }
+}
+
 socket.on('connect', function() {
     console.log('Connected to server');
 });
@@ -22,6 +40,7 @@ socket.on('newMessage', function(message) {
     });
 
     jQuery('#messages').append(html);
+    scrollToBottom();
 });
 
 socket.on('newLocationMessage', function(message) {
@@ -34,6 +53,7 @@ socket.on('newLocationMessage', function(message) {
     });
 
     jQuery('#messages').append(html);
+    scrollToBottom();
 });
 
 jQuery('#message-form').on('submit', function (e) {
