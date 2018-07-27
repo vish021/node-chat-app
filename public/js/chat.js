@@ -39,6 +39,10 @@ socket.on('disconnect', function() {
     console.log('disconnected from server');
 });
 
+socket.on('updateUserList', function(users) {
+    console.log('List', users);
+});
+
 socket.on('newMessage', function(message) {
     var formattedTime =  moment(message.createdAt).format('h:mm a');
     var template = jQuery('#message-template').html();

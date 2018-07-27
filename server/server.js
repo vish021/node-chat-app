@@ -5,6 +5,8 @@ const socketIO = require('socket.io');
 const express = require('express');
 const {generateMessage, generateLocationMessage} = require('./utils/message');
 const {isRealString} = require('./utils/validations');
+const {Users} = require('./utils/users');
+
 const port = process.env.PORT || 3000;
 
 var app = express();
@@ -12,6 +14,7 @@ var server = http.createServer(app);
 
 //configure http server to use socket.io
 var io = socketIO(server);
+var users = new Users();
 
 app.use(express.static(publicPath));//for static 
 
@@ -19,15 +22,16 @@ app.use(express.static(publicPath));//for static
 io.on('connection', (socket) => {
     console.log('New user connected');
 
-   
-
     socket.on('join', (params, callback) => {
         if(!isRealString(params.name) || !isRealString(params.room)) {
-            callback('Name and room name are required.');
+            return callback('Name and room name are required.');
         }
 
         socket.join(params.room);
+        users.removeUser(socket.id);// to make sure remove user if already exists
+        users.addUser(socket.id, params.name, params.room);
 
+        io.to(params.room).emit('updateUserList', users.getUserList(params.room));//emit to all the users in current room updated user list
         socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));//current user
         socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin',`${params.name} has joined!`));//broadcast to all users in the current room
         callback();

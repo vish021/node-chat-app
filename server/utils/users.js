@@ -15,11 +15,16 @@ class Users {
     }
 
     removeUser (id) {
-
+        var foundUser = this.getUser(id);
+        
+        if(foundUser) {
+            _.remove(this.users, (user) => foundUser.id == user.id);
+        }
+        return foundUser;
     }
 
     getUser(id) {
-
+        return _.find(this.users, {id});
     }
 
     getUserList(room) {
@@ -30,6 +35,5 @@ class Users {
     }
 
 }
-
 
 module.exports = {Users};
