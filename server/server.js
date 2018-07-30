@@ -49,6 +49,13 @@ io.on('connection', (socket) => {
     })
     
     socket.on('disconnect', () => {
+        var user = users.removeUser(socket.id);
+
+        if(user) {
+            //emit every single person cnnected to chat room
+            io.to(user.room).emit('updateUserList', users.getUserList(user.room));
+            io.to(user.room).emit('newMessage', generateMessage('Admin', `${user.name} user has left`));
+        }
         console.log('client disconnected');
     });
 });
