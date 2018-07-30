@@ -39,14 +39,23 @@ io.on('connection', (socket) => {
 
     //NOTE: socket emits to single socket connection, io emits to every single connected user
     socket.on('createMessage', (message, callback) => {
-        //io.emit emits to every single user connected
-        io.emit('newMessage', generateMessage(message.from, message.text));
+        var user = users.getUser(socket.id);
+
+        if(user && isRealString(message.text)) {
+            //io.emit emits to every single user connected inside a room
+            io.to(user.room).emit('newMessage', generateMessage(user.name, message.text));
+        }
+        
         callback();
     });
 
     socket.on('createLocationMessage', (coords) => {
-        io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude));
-    })
+        var user = users.getUser(socket.id);
+
+        if(user && coords) {
+            io.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name, coords.latitude, coords.longitude));
+        }  
+    });
     
     socket.on('disconnect', () => {
         var user = users.removeUser(socket.id);
